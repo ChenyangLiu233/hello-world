@@ -79,14 +79,31 @@ install.packages("lars")
 library(lars)
 fitness <- data.matrix(fitness)
 x <- fitness[,-3]
-x <- x[, -2]
-x <- x[, -3]
 y <- fitness[,3]
 lar = lars(x,y)
+lar
+summary(lar)
 
+install.packages("MASS")
+library(MASS)
+fitness <- as.data.frame(fitness)
+model <- lm.ridge(Oxygen ~ Weight + MaxPulse + RunPulse + RestPulse + RunTime + Age,lambda = seq(0, 0.1, 0.001), data = fitness)
+plot(model)
+model
 
+install.packages("ridge")
+library(ridge)
+model1 <- linearRidge(Oxygen ~ MaxPulse + RunPulse + RunTime + Age, data = fitness)
+summary(model1)
+model2 <- linearRidge(Oxygen ~ RunPulse + RunTime + Age, data = fitness)
+summary(model2)
 
+fit4 <- lm(Oxygen ~ RunPulse + RunTime + Age, data = fitness)
+summary(fit4)
 
+fit5 <- lm(Oxygen ~ RunPulse + RunTime + Age + RunPulse:Age, data = fitness)
+summary(fit5)
+vif(fit5)
 # remedial action: remove some sample points
 glm2 <- lm(Oxygen ~ Weight + MaxPulse + RunPulse + RunTime + Age, data = fitness[-c(15,17),])
 summary(glm2)
@@ -94,4 +111,4 @@ par(mfcol = c(1,2), cex = 0.7)
 plot(glm2, which = 1)
 plot(glm2, which = 2)
 
-install.packages("ISLR")
+
