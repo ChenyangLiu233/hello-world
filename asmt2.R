@@ -27,16 +27,15 @@ rtest <- function (k = 1e4, data){
   covariates <- matrix(0, nrow = k, ncol = 6)
   N <- length(data$Oxygen)
   counter <- rep(0, 6)
-  p <- rep(0,6)
   set.seed <- 190017612
   i = 1
   for (i in 1 : k) {
     rand <- sample(data$Oxygen, N, replace = FALSE)
     newfit <- lm(rand ~ Weight + MaxPulse + RunPulse + RestPulse + RunTime + Age, data = fitness)
     newT <-  coef(newfit)
-    covariates[i,] <- newT[2:7]
+    covariates[i,] <- newT[-1]
     for (j in 1:6){
-      if (abs(covariates[i,j]) > obsT[j]) counter[j] = counter[j] + 1
+      if (abs(covariates[i,j]) > abs(obsT[j])) counter[j] = counter[j] + 1
     }
     i = i + 1
   }
@@ -100,6 +99,7 @@ summary(model2)
 
 fit4 <- lm(Oxygen ~ RunPulse + RunTime + Age, data = fitness)
 summary(fit4)
+obsT4 <- coef(fit4)[-1]
 
 # model diagnose
 vif(fit4)
@@ -107,7 +107,30 @@ vif(fit4)
 # compare model fit3 fit4
 anova(fit4,fit3)
 
-fit5 <- lm(Oxygen ~ RunPulse + RunTime + Age + RunPulse:Age, data = fitness)
+# Randomization Test for coefs
+# randomlization
+rtest <- function (k = 1e4, data){
+  covariates <- matrix(0, nrow = k, ncol = 3)
+  N <- length(data$Oxygen)
+  counter <- rep(0, 3)
+  set.seed <- 190017612
+  i = 1
+  for (i in 1 : k) {
+    rand4 <- sample(data$Oxygen, N, replace = FALSE)
+    newfit4 <- lm(rand4 ~ RunPulse + RunTime + Age, data = fitness)
+    newT4 <-  coef(newfit4)
+    covariates[i,] <- newT4[-1]
+    for (j in 1:3){
+      if (abs(covariates[i,j]) > abs(obsT4[j])) counter[j] = counter[j] + 1
+    }
+    i = i + 1
+  }
+  p <- counter / k
+  return(p)
+}
+rtest(data=fitness)
+
+fit5 <- lm(Oxygen ~ RunPulse + RunTime + Age + RunTime:Age, data = fitness)
 summary(fit5)
 vif(fit5)
 # remedial action: remove some sample points
