@@ -101,6 +101,12 @@ summary(model2)
 fit4 <- lm(Oxygen ~ RunPulse + RunTime + Age, data = fitness)
 summary(fit4)
 
+# model diagnose
+vif(fit4)
+
+# compare model fit3 fit4
+anova(fit4,fit3)
+
 fit5 <- lm(Oxygen ~ RunPulse + RunTime + Age + RunPulse:Age, data = fitness)
 summary(fit5)
 vif(fit5)
