@@ -12,16 +12,6 @@ fit1 <- lm(Oxygen ~ Weight + MaxPulse + RunPulse + RestPulse + RunTime + Age, da
 summary(fit1)
 obsT <- coef(fit1)[-1]
 
-# model diagnose:
-anova(fit1)
-
-# remedial action : delete variable Weight
-fit2 <- lm(Oxygen ~ MaxPulse + RunPulse + RestPulse + RunTime + Age, data = fitness )
-summary(fit2)
-
-# compare fit1 fit2
-anova(fit2, fit1)
-
 # randomlization
 rtest <- function (k = 1e4, data){
   covariates <- matrix(0, nrow = k, ncol = 6)
@@ -44,6 +34,15 @@ rtest <- function (k = 1e4, data){
 }
 rtest(data=fitness)
 
+# model diagnose:
+anova(fit1)
+
+# compare fit1 fit2
+anova(fit2, fit1)
+
+# remedial action : delete variable Weight
+fit2 <- lm(Oxygen ~ MaxPulse + RunPulse + RestPulse + RunTime + Age, data = fitness )
+summary(fit2)
 
 # model diagnose: residuals plot
 par(mfcol = c(2,2), cex = 0.7)
@@ -60,7 +59,7 @@ vif(fit2)
 
 # remedial action: stepwise
 col <- step(fit2)
-fit3 <- lm(Oxygen ~ MaxPulse + RunPulse + RunTime + Age, data = fitness )
+fit3 <- lm(Oxygen ~ Weight + MaxPulse + RunPulse + RunTime + Age, data = fitness )
 summary(fit3)
 
 # compare model fit2 fit3
